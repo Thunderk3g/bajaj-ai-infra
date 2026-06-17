@@ -24,7 +24,7 @@ services:
     restart: always
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@shared-postgres:5432/compliance_db
+      DATABASE_URL: postgresql://compliance_user:${COMPLIANCE_DB_PASSWORD}@shared-postgres:5432/compliance_db
       REDIS_URL: redis://shared-redis:6379
     # NOTE: no depends_on for shared-postgres/shared-redis — they live in
     # shared/docker-compose.yml, so they can't be referenced here. Startup

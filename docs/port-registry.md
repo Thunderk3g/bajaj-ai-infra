@@ -26,12 +26,14 @@ Frontends use even ports starting at 3000 (step 2); backends start at 8000
 
 ## Databases
 
-Each agent gets one database on `shared-postgres`, named `<agent>_db` with the
-`vector` extension enabled (see `shared/init-db.sh`).
+Each agent gets one database on `shared-postgres`, named `<agent>_db`, owned by
+a dedicated least-privilege login role `<agent>_user`, with the `vector`
+extension enabled (see `shared/init-db.sh`). Role passwords come from
+`shared/.env` (`<AGENT>_DB_PASSWORD`) and must match each agent's own `.env`.
 
-| Agent            | Database        | Status   |
-|------------------|-----------------|----------|
-| compliance-agent | compliance_db   | active   |
-| seo-agent        | seo_db          | active   |
-| hr-agent         | hr_db           | reserved |
-| voice-agent      | voice_db        | reserved |
+| Agent            | Database        | DB role          | Status   |
+|------------------|-----------------|------------------|----------|
+| compliance-agent | compliance_db   | compliance_user  | active   |
+| seo-agent        | seo_db          | seo_user         | active   |
+| hr-agent         | hr_db           | hr_user          | reserved |
+| voice-agent      | voice_db        | voice_user       | reserved |
