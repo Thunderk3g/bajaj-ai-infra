@@ -1,0 +1,12 @@
+{
+  "name": "compliance-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Placeholder frontend for the Compliance Agent. Replace with the real app.",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {}
+}

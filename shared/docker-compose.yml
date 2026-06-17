@@ -1,0 +1,62 @@
+# ──────────────────────────────────────────────────────────────────────────
+# shared/docker-compose.yml
+# Manages the SHARED stack ONLY: postgres, redis, nginx.
+# Do NOT add agent containers here — each agent has its own compose file.
+# ──────────────────────────────────────────────────────────────────────────
+services:
+  shared-postgres:
+    image: docker.io/pgvector/pgvector:pg15
+    pull_policy: never
+    container_name: shared-postgres
+    restart: always
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shared-network
+
+  shared-redis:
+    image: docker.io/library/redis:7-alpine
+    pull_policy: never
+    container_name: shared-redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shared-network
+
+  shared-nginx:
+    image: docker.io/library/nginx:alpine
+    pull_policy: never
+    container_name: shared-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./proxy_params.conf:/etc/nginx/proxy_params.conf:ro
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    name: shared-network
+    driver: bridge
+
+volumes:
+  pgdata:
+    name: shared-pgdata
+  redisdata:
+    name: shared-redisdata

@@ -1,0 +1,37 @@
+# ──────────────────────────────────────────────────────────────────────────
+# seo-agent/docker-compose.yml
+# ONLY the SEO agent's own containers: frontend + backend.
+# Joins the EXTERNAL shared-network created by shared/docker-compose.yml.
+# Never define postgres/redis/nginx here. Never add ports: (nginx routes).
+# ──────────────────────────────────────────────────────────────────────────
+services:
+  frontend:
+    build: ./frontend
+    image: localhost/seo-frontend:latest
+    pull_policy: never
+    container_name: seo-frontend
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://10.3.5.99/seo/api
+    networks:
+      - shared-network
+
+  backend:
+    build: ./backend
+    image: localhost/seo-backend:latest
+    pull_policy: never
+    container_name: seo-backend
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@shared-postgres:5432/seo_db
+      REDIS_URL: redis://shared-redis:6379
+    depends_on:
+      - shared-postgres
+      - shared-redis
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true

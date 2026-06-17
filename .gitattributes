@@ -1,0 +1,10 @@
+# Keep LF line endings for files that run on the RHEL9 VM.
+# CRLF in shell scripts breaks the shebang/parsing under bash.
+*.sh        text eol=lf
+*.conf      text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.py        text eol=lf
+Dockerfile  text eol=lf
+.env.example text eol=lf
+.gitkeep    text eol=lf

@@ -1,0 +1,11 @@
+.env
+certs/*.pem
+certs/*.crt
+certs/*.key
+**/__pycache__/
+**/*.pyc
+**/node_modules/
+**/.next/
+**/*.log
+.DS_Store
+*.swp
