@@ -28,11 +28,17 @@ echo ""
 echo "=== Starting Agents ==="
 for dir in /opt/*/; do
   dirname=$(basename "$dir")
-  if [ "$dirname" != "shared" ] && [ -f "$dir/docker-compose.yml" ]; then
-    echo "Starting $dirname..."
-    cd "$dir"
-    sudo podman-compose up -d
+  [ "$dirname" = "shared" ] && continue
+  # Prefer an agent's shared-infra compose file when it ships one; fall back to
+  # the default docker-compose.yml otherwise. This keeps a standalone
+  # docker-compose.yml (own postgres) from being launched by mistake.
+  if   [ -f "$dir/docker-compose.shared.yml" ]; then cf="docker-compose.shared.yml"
+  elif [ -f "$dir/docker-compose.yml" ];        then cf="docker-compose.yml"
+  else continue
   fi
+  echo "Starting $dirname ($cf)..."
+  cd "$dir"
+  sudo podman-compose -f "$cf" up -d
 done
 
 echo ""
