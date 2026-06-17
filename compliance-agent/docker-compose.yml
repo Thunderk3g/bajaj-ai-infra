@@ -6,13 +6,23 @@
 # ──────────────────────────────────────────────────────────────────────────
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      # Served behind nginx under /compliance/. NEXT_PUBLIC_* + basePath are
+      # baked at BUILD time in a Next.js standalone build, so they MUST be build
+      # args — setting them only at runtime leaves assets at /_next/... (404 →
+      # no CSS) and the browser API base wrong.
+      args:
+        NEXT_PUBLIC_BASE_PATH: /compliance
+        NEXT_PUBLIC_API_BASE: http://10.3.5.99/compliance/api
+        INTERNAL_API_BASE: http://compliance-backend:8000
     image: localhost/compliance-frontend:latest
     pull_policy: never
     container_name: compliance-frontend
     restart: always
     environment:
       - NEXT_PUBLIC_API_BASE=http://10.3.5.99/compliance/api
+      - INTERNAL_API_BASE=http://compliance-backend:8000
     networks:
       - shared-network
 
