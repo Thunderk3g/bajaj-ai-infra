@@ -22,7 +22,7 @@ Each agent is an independent deployment that joins the shared network.
 
 ```bash
 cd /opt
-sudo git clone https://github.com/YOUR_ORG/bajaj-ai-platform.git .
+sudo git clone https://github.com/Thunderk3g/bajaj-ai-infra.git .
 
 cd shared
 sudo cp .env.example .env

@@ -26,9 +26,9 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@shared-postgres:5432/compliance_db
       REDIS_URL: redis://shared-redis:6379
-    depends_on:
-      - shared-postgres
-      - shared-redis
+    # NOTE: no depends_on for shared-postgres/shared-redis — they live in
+    # shared/docker-compose.yml, so they can't be referenced here. Startup
+    # order is enforced by shared/scripts/start-all.sh (shared stack first).
     networks:
       - shared-network
 
