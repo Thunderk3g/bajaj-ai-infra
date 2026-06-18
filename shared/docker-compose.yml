@@ -37,6 +37,28 @@ services:
     networks:
       - shared-network
 
+  shared-pgadmin:
+    image: docker.io/dpage/pgadmin4:latest
+    pull_policy: never
+    container_name: shared-pgadmin
+    restart: always
+    env_file: .env
+    environment:
+      # Served under the /pgadmin/ subpath behind shared-nginx (X-Script-Name).
+      PGADMIN_LISTEN_PORT: 5050
+      # Bind only inside the shared network; nginx is the only public entrypoint.
+      PGADMIN_CONFIG_PROXY_X_HOST_COUNT: 1
+      PGADMIN_CONFIG_PROXY_X_PREFIX_COUNT: 1
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+      # Pre-registers the shared-postgres server (password still prompted on connect).
+      - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      shared-postgres:
+        condition: service_healthy
+    networks:
+      - shared-network
+
   shared-nginx:
     image: docker.io/library/nginx:alpine
     pull_policy: never
@@ -60,3 +82,5 @@ volumes:
     name: shared-pgdata
   redisdata:
     name: shared-redisdata
+  pgadmindata:
+    name: shared-pgadmindata

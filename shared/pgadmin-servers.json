@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Shared Postgres",
+      "Group": "Bajaj AI Platform",
+      "Host": "shared-postgres",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "SSLMode": "prefer",
+      "Comment": "Shared cluster: compliance_db, seo_db, ... (one DB per agent)"
+    }
+  }
+}
