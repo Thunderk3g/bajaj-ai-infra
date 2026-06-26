@@ -11,9 +11,18 @@ Frontends use even ports starting at 3000 (step 2); backends start at 8000
 |------------------|--------------------------|-------------------------|----------------|----------|
 | compliance-agent | compliance-frontend:3000 | compliance-backend:8000 | /compliance/   | active   |
 | seo-agent        | seo-frontend:3002        | seo-backend:8001        | /seo/          | active   |
-| hr-agent         | hr-frontend:3004         | hr-backend:8002         | /hr/           | reserved |
-| voice-agent      | voice-frontend:3006      | voice-backend:8003      | /voice/        | reserved |
-| (next)           | <name>-frontend:3008     | <name>-backend:8004     | /<name>/       | free     |
+| monitoring-agent | (landing-frontend:80)¹   | monitoring-backend:8002 | /monitoring/   | active   |
+| hr-agent         | hr-frontend:3004         | hr-backend:8003         | /hr/           | reserved |
+| voice-agent      | voice-frontend:3006      | voice-backend:8004      | /voice/        | reserved |
+| (next)           | <name>-frontend:3008     | <name>-backend:8005     | /<name>/       | free     |
+
+> ¹ monitoring-agent has **no frontend container** — its UI ships as a route
+> inside the existing `landing-frontend` SPA. It also runs a second container,
+> `socket-proxy` (`ghcr.io/tecnativa/docker-socket-proxy`, internal :2375, no
+> public route), a GET-only proxy in front of the rootful Podman socket.
+> Backend port 8002 was previously pencilled in for hr-agent; per the agent
+> monitoring design spec it is now monitoring's, and the hr/voice reservations
+> shifted up one (8003/8004).
 
 ## Allocation rules
 

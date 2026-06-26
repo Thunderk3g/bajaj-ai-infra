@@ -2,6 +2,9 @@
 certs/*.pem
 certs/*.crt
 certs/*.key
+# Basic-auth credentials for /monitoring* (the .example placeholder is tracked)
+.htpasswd-monitoring
+!.htpasswd-monitoring.example
 **/__pycache__/
 **/*.pyc
 **/node_modules/

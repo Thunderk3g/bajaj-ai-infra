@@ -69,6 +69,10 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./proxy_params.conf:/etc/nginx/proxy_params.conf:ro
+      # Basic-auth users for the gated /monitoring* routes. Generate the real
+      # file with `htpasswd` (see monitoring-agent/README.md); a placeholder
+      # ships as .htpasswd-monitoring.example. The real file is git-ignored.
+      - ./.htpasswd-monitoring:/etc/nginx/.htpasswd-monitoring:ro
     networks:
       - shared-network
 

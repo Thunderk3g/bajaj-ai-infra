@@ -1,0 +1,54 @@
+# ──────────────────────────────────────────────────────────────────────────
+# monitoring-agent/docker-compose.yml
+# Read-only container monitoring. Two containers ONLY:
+#   * monitoring-backend — FastAPI :8002, routed by nginx at /monitoring/api/
+#   * socket-proxy       — tecnativa GET-only proxy in front of the Podman socket
+# Joins the EXTERNAL shared-network created by shared/docker-compose.yml.
+# Never define postgres/redis/nginx here. Never add ports: (nginx routes).
+# ──────────────────────────────────────────────────────────────────────────
+services:
+  backend:
+    build: ./backend
+    image: localhost/monitoring-backend:latest
+    pull_policy: never
+    container_name: monitoring-backend
+    restart: always
+    environment:
+      # The backend only ever issues GET calls; the proxy enforces read-only.
+      SOCKET_PROXY_URL: tcp://socket-proxy:2375
+    # NOTE: no depends_on for socket-proxy across compose files is fine — both
+    # live in THIS file, but the backend retries lazily and only opens the
+    # socket on first request, so strict ordering is not required.
+    depends_on:
+      - socket-proxy
+    networks:
+      - shared-network
+
+  socket-proxy:
+    image: ghcr.io/tecnativa/docker-socket-proxy
+    pull_policy: never
+    container_name: socket-proxy
+    restart: always
+    environment:
+      # Allow ONLY the read endpoints the monitor needs. POST=0 blocks every
+      # write (start/stop/restart), EXEC=0 blocks exec. list/inspect/stats/logs
+      # ride on CONTAINERS=1.
+      CONTAINERS: 1
+      INFO: 1
+      PING: 1
+      VERSION: 1
+      POST: 0
+      EXEC: 0
+      IMAGES: 0
+      NETWORKS: 0
+      VOLUMES: 0
+    volumes:
+      # Rootful Podman socket, mounted read-only into the proxy as the
+      # Docker-compatible socket path the proxy expects.
+      - /run/podman/podman.sock:/var/run/docker.sock:ro
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
