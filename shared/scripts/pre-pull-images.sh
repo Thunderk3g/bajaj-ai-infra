@@ -13,8 +13,9 @@ IMAGES=(
   "docker.io/library/redis:7-alpine"
   "docker.io/library/nginx:alpine"
   "docker.io/dpage/pgadmin4:latest"
-  # Read-only Docker/Podman socket proxy (monitoring-agent):
-  "ghcr.io/tecnativa/docker-socket-proxy"
+  # Read-only Docker/Podman socket proxy (monitoring-agent). Docker Hub mirror —
+  # ghcr.io is not on the VM egress whitelist, docker.io is.
+  "docker.io/tecnativa/docker-socket-proxy:latest"
   # Agent base images (used by Dockerfiles):
   "docker.io/library/python:3.11-slim"
   "docker.io/library/node:20-alpine"

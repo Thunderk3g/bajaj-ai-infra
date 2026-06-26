@@ -25,10 +25,18 @@ services:
       - shared-network
 
   socket-proxy:
-    image: ghcr.io/tecnativa/docker-socket-proxy
+    # Docker Hub mirror (the VM's egress whitelist reaches docker.io for every
+    # other base image; ghcr.io is not whitelisted). Same image, same digest line.
+    image: docker.io/tecnativa/docker-socket-proxy:latest
     pull_policy: never
     container_name: socket-proxy
     restart: always
+    # RHEL9 SELinux: a confined container (container_t) is denied access to the
+    # host Podman socket. We can't relabel /run/podman/podman.sock with :z/:Z
+    # (that would break the host's own podman). Disabling the label for THIS
+    # one internal, read-only proxy container is the standard, scoped fix.
+    security_opt:
+      - label=disable
     environment:
       # Allow ONLY the read endpoints the monitor needs. POST=0 blocks every
       # write (start/stop/restart), EXEC=0 blocks exec. list/inspect/stats/logs
